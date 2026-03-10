@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
+
+:root {
+  --bg: #edf5ff;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.88);
+  --text: #152238;
+  --muted: #4f6582;
+  --accent: #1e6fe8;
+  --accent-dark: #144fb2;
+  --ring: rgba(30, 111, 232, 0.24);
+  --line: rgba(21, 34, 56, 0.1);
+  --shadow: 0 20px 60px rgba(20, 52, 108, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  color: var(--text);
+  text-align: center;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(30, 111, 232, 0.28), transparent 38%),
+    radial-gradient(circle at 14% 24%, rgba(83, 170, 255, 0.24), transparent 34%),
+    linear-gradient(160deg, #f8fbff 0%, #e7f0ff 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.page {
+  position: relative;
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+  padding: 2rem 0 3.5rem;
+  text-align: center;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(22, 36, 35, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 36, 35, 0.045) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(circle at center, black 48%, transparent 100%);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 3.5rem;
+  animation: rise 0.55s ease;
+}
+
+.brand {
+  margin: 0;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.topbar a {
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.topbar a:hover {
+  color: var(--text);
+}
+
+.hero {
+  animation: rise 0.75s ease;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0.7rem 0 1rem;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 4.6vw, 4rem);
+  line-height: 1.08;
+  max-width: 14ch;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 60ch;
+  margin-right: auto;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.shortener-panel {
+  margin-top: 2rem;
+  margin-right: auto;
+  margin-left: auto;
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: 20px;
+  padding: 1.25rem;
+  backdrop-filter: blur(8px);
+}
+
+.shortener-panel label {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.input-row,
+.custom-row {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.input-row input,
+.custom-row input {
+  text-align: center;
+}
+
+.input-row {
+  grid-template-columns: 1fr auto;
+}
+
+.custom-row {
+  margin-top: 0.8rem;
+  grid-template-columns: 1fr 180px;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  border-radius: 12px;
+}
+
+input,
+select {
+  border: 1px solid var(--line);
+  padding: 0.84rem 0.92rem;
+  outline: none;
+  background: #fff;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+button {
+  border: none;
+  padding: 0.84rem 1.25rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(30, 111, 232, 0.26);
+}
+
+.result-card {
+  margin-top: 1.15rem;
+  margin-right: auto;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.result-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  font-weight: 700;
+}
+
+.result-link {
+  margin: 0.4rem 0 0.7rem;
+  font-weight: 800;
+  color: #1b4f9e;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.result-meta span {
+  background: rgba(30, 111, 232, 0.14);
+  color: #1b4f9e;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.metrics {
+  margin-top: 2.6rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  animation: rise 0.9s ease;
+}
+
+.metrics article,
+.features article {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.metric-value {
+  margin: 0;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+}
+
+.metric-label {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.features {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  animation: rise 1.05s ease;
+}
+
+.features h3 {
+  margin: 0;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem;
+}
+
+.features p {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2.1rem;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .topbar nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .input-row,
+  .custom-row,
+  .metrics,
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    width: min(1120px, 94vw);
+    padding: 1.25rem 0 2.25rem;
+  }
+
+  h1 {
+    font-size: clamp(1.7rem, 8vw, 2.2rem);
+  }
+
+  .topbar nav {
+    gap: 0.8rem;
+    font-size: 0.93rem;
+  }
+
+  .shortener-panel,
+  .result-card,
+  .metrics article,
+  .features article {
+    padding: 0.9rem;
+  }
+}

@@ -1,8 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 const pool = require("./db");
 const { nanoid } = require("nanoid");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const port = 5000;
