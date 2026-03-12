@@ -57,8 +57,36 @@ const generateShortCode = () => {
 //CORE LOGIC
 //-----------------------------------------------------------------------
 
+// Rate Limiting Middleware
+const rateLimiter = async (req, res, next) => {
+  const ip = req.ip;
+  const limit = 10; // Max 10 requests
+  const windowInSeconds = 60; // Per 60 seconds
+
+  try {
+    // Increment the counter for this IP
+    const requestCount = await redisClient.incr(ip);
+
+    if (requestCount === 1) {
+      // If it's the first request, set the expiration timer
+      await redisClient.expire(ip, windowInSeconds);
+    }
+
+    if (requestCount > limit) {
+      return res
+        .status(429)
+        .json({ error: "Too many requests. Please try again later." });
+    }
+
+    next(); // IP is under the limit, proceed to the route handler
+  } catch (error) {
+    console.error("Rate Limiter Error:", error);
+    next(); // Fail open so the app keeps working if Redis fails
+  }
+};
+
 //Post Original url
-app.post("/", async (req, res) => {
+app.post("/", rateLimiter, async (req, res) => {
   const { originalUrl } = req.body;
 
   // 1. Validate URL
@@ -126,5 +154,5 @@ app.get("/:shortCode", async (req, res) => {
 //-----------------------------------------------------------------------
 
 app.listen(port, () => {
-  console.log(`✅Server running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
