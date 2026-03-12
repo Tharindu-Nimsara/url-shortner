@@ -1,17 +1,56 @@
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 import "./App.css";
 
 function App() {
+  const [url, setURL] = useState({
+    originalUrl: "",
+  });
+  const [shortedURL, setShortedURL] = useState("");
+  const [copyStatus, setCopyStatus] = useState("Copy");
+
+  async function HandleURL() {
+    try {
+      console.log(url);
+      const shortUrlResponse = await axios.post(
+        import.meta.env.VITE_BACKEND_URL,
+        url,
+      );
+      setShortedURL(shortUrlResponse.data.shortUrl);
+      console.log(shortUrlResponse);
+      setURL({
+        originalUrl: "",
+      });
+      toast.success("Login successful!");
+    } catch (e) {
+      toast.error(e.response.data.message);
+    }
+  }
+
+  const HandleCopy = async () => {
+    try {
+      // Use the Clipboard API to write the state value to the clipboard
+      await navigator.clipboard.writeText(shortedURL);
+
+      // 3. (Optional) Provide user feedback
+      setCopyStatus("Copied!");
+      setTimeout(() => {
+        setCopyStatus("Copy");
+      }, 1500); // Revert button text after 1.5 seconds
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      alert("Failed to copy text.");
+    }
+  };
+
   return (
     <main className="page">
       <div className="bg-grid" />
 
       <header className="topbar">
         <p className="brand">SnapLink</p>
-        <nav>
-          <a href="#">Features</a>
-          <a href="#">Pricing</a>
-          <a href="#">Dashboard</a>
-        </nav>
+        
       </header>
 
       <section className="hero">
@@ -28,17 +67,26 @@ function App() {
             <input
               id="urlInput"
               type="url"
+              value={url.originalUrl}
               placeholder="https://example.com/very/long/link/to-share"
+              onChange={(e) => {
+                setURL({
+                  originalUrl: e.target.value,
+                });
+              }}
             />
-            <button type="button">Shorten URL</button>
+            <button type="button" onClick={HandleURL}>
+              Shorten URL
+            </button>
           </div>
-          <div className="custom-row">
-            <input type="text" placeholder="Custom alias (optional)" />
-            <select defaultValue="30 days">
-              <option>7 days</option>
-              <option>30 days</option>
-              <option>Never expire</option>
-            </select>
+          <br />
+          <br />
+          <label htmlFor="urlInput">Result</label>
+          <div className="input-row">
+            <input id="urlInput" type="url" value={shortedURL} />
+            <button type="button" onClick={HandleCopy}>
+              {copyStatus}
+            </button>
           </div>
         </div>
 

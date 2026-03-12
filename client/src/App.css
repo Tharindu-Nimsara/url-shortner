@@ -168,7 +168,7 @@ button {
 
 input,
 select {
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   padding: 0.84rem 0.92rem;
   outline: none;
   background: #fff;
