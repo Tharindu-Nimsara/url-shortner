@@ -50,7 +50,6 @@ function App() {
 
       <header className="topbar">
         <p className="brand">SnapLink</p>
-        
       </header>
 
       <section className="hero">
@@ -80,14 +79,19 @@ function App() {
             </button>
           </div>
           <br />
-          <br />
-          <label htmlFor="urlInput">Result</label>
-          <div className="input-row">
-            <input id="urlInput" type="url" value={shortedURL} />
-            <button type="button" onClick={HandleCopy}>
-              {copyStatus}
-            </button>
-          </div>
+
+          {shortedURL && (
+            <>
+              <br />
+              <label htmlFor="urlInput">Result</label>
+              <div className="input-row">
+                <input id="urlInput" type="url" value={shortedURL} />
+                <button type="button" onClick={HandleCopy}>
+                  {copyStatus}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <article className="result-card">
