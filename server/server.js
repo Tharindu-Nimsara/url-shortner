@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
 const { nanoid } = require("nanoid");
+const redis = require("redis");
 
 const app = express();
 app.use(cors());
@@ -22,6 +23,28 @@ async function testDB() {
 }
 
 testDB();
+
+//-----------------------------------
+
+//-----------------------------------
+// Connect to local Redis instance (default port 6379)
+
+const redisClient = redis.createClient();
+
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
+
+async function connectRedis() {
+  try {
+    await redisClient.connect();
+    console.log("✅ Redis connected");
+  } catch (err) {
+    console.error(
+      "⚠️ Redis connection failed. Proceeding without cache.",
+      err.message,
+    );
+  }
+}
+connectRedis();
 
 //-----------------------------------
 
@@ -71,6 +94,14 @@ app.get("/:shortCode", async (req, res) => {
   const { shortCode } = req.params;
 
   try {
+    // 1. Check Redis Cache First
+    const cachedUrl = await redisClient.get(shortCode);
+
+    if (cachedUrl) {
+      // CACHE HIT: Redirect immediately
+      return res.redirect(302, cachedUrl);
+    }
+    // CACHE MISS
     // 1. Query PostgreSQL
     const query = "SELECT original_url FROM urls WHERE short_code = $1";
     const { rows } = await pool.query(query, [shortCode]);
@@ -79,9 +110,12 @@ app.get("/:shortCode", async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: "URL not found" });
     }
-
-    // 3. Redirect (HTTP 302)
     const originalUrl = rows[0].original_url;
+
+    // 3. Save to Redis for future requests (Set expiration to 24 hours)
+    await redisClient.setEx(shortCode, 86400, originalUrl);
+
+    // 4. Redirect (HTTP 302)
     res.redirect(302, originalUrl);
   } catch (error) {
     console.error(error);
@@ -92,5 +126,5 @@ app.get("/:shortCode", async (req, res) => {
 //-----------------------------------------------------------------------
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`✅Server running on port ${port}`);
 });
