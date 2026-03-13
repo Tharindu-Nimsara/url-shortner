@@ -154,6 +154,10 @@ h1 {
   grid-template-columns: 1fr auto;
 }
 
+.analyze{
+  background: rgb(86, 168, 4);
+}
+
 .custom-row {
   margin-top: 0.8rem;
   grid-template-columns: 1fr 180px;

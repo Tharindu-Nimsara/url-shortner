@@ -54,7 +54,7 @@ const generateShortCode = () => {
 };
 
 //-----------------------------------------------------------------------
-//CORE LOGIC
+//CORE LOGICS
 //-----------------------------------------------------------------------
 
 // Rate Limiting Middleware
@@ -117,6 +117,35 @@ app.post("/", rateLimiter, async (req, res) => {
   }
 });
 
+// Get analytics from analytics db
+app.get("/analytics/:shortCode", async (req, res) => {
+  const { shortCode } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        DATE(accessed_at) as date, 
+        COUNT(*) as clicks 
+      FROM analytics 
+      WHERE short_code = $1 
+      GROUP BY DATE(accessed_at) 
+      ORDER BY date ASC;
+    `;
+    const { rows } = await pool.query(query, [shortCode]);
+
+    // Calculate total clicks quickly
+    const totalClicks = rows.reduce(
+      (sum, row) => sum + parseInt(row.clicks),
+      0,
+    );
+
+    res.json({ totalClicks, timeline: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 //Redirect to original url from shortUrl.
 app.get("/:shortCode", async (req, res) => {
   const { shortCode } = req.params;
@@ -126,12 +155,21 @@ app.get("/:shortCode", async (req, res) => {
     const cachedUrl = await redisClient.get(shortCode);
 
     if (cachedUrl) {
-      // CACHE HIT: Redirect immediately
+      // CACHE HIT: Record analytics then redirect
+      const ipAddress = req.ip;
+      const userAgent = req.headers["user-agent"];
+      pool
+        .query(
+          "INSERT INTO analytics (short_code, ip_address, user_agent) VALUES ($1, $2, $3)",
+          [shortCode, ipAddress, userAgent],
+        )
+        .catch((err) => console.error("Analytics error (cache hit):", err));
       return res.redirect(302, cachedUrl);
     }
     // CACHE MISS
     // 1. Query PostgreSQL
-    const query = "SELECT original_url FROM urls WHERE short_code = $1";
+    const query =
+      "SELECT original_url, expires_at FROM urls WHERE short_code = $1";
     const { rows } = await pool.query(query, [shortCode]);
 
     // 2. Handle missing URL
@@ -139,12 +177,30 @@ app.get("/:shortCode", async (req, res) => {
       return res.status(404).json({ error: "URL not found" });
     }
     const originalUrl = rows[0].original_url;
+    const expiresAt = rows[0].expires_at;
+    const now = new Date();
+
+    // Check if the link has an expiration date and if it has passed
+    if (expiresAt && now > new Date(expiresAt)) {
+      return res.status(410).json({ error: "This link has expired" }); // 410 Gone
+    }
 
     // 3. Save to Redis for future requests (Set expiration to 24 hours)
     await redisClient.setEx(shortCode, 86400, originalUrl);
 
     // 4. Redirect (HTTP 302)
     res.redirect(302, originalUrl);
+
+    // 5. Send data to analytics db
+    const ipAddress = req.ip;
+    const userAgent = req.headers["user-agent"];
+
+    pool
+      .query(
+        "INSERT INTO analytics (short_code, ip_address, user_agent) VALUES ($1, $2, $3)",
+        [shortCode, ipAddress, userAgent],
+      )
+      .catch((err) => console.error("Analytics error:", err));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

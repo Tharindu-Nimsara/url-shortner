@@ -1,12 +1,17 @@
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+
 import "./App.css";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 
 function App() {
   const [url, setURL] = useState({
     originalUrl: "",
   });
+  const [shortCode, setShortCode] = useState("");
+  const [analyticsCode, setAnalyticsCode] = useState("");
   const [shortedURL, setShortedURL] = useState("");
   const [copyStatus, setCopyStatus] = useState("Copy");
 
@@ -17,15 +22,26 @@ function App() {
         import.meta.env.VITE_BACKEND_URL,
         url,
       );
-      setShortedURL(shortUrlResponse.data.shortUrl);
+
       console.log(shortUrlResponse);
+
+      setShortedURL(shortUrlResponse.data.shortUrl); // http://localhost:5000/UmOEtk2
+
       setURL({
         originalUrl: "",
-      });
-      toast.success("Login successful!");
+      }); // clear input URL
+      toast.success("successful!");
     } catch (e) {
       toast.error(e.response.data.message);
     }
+  }
+
+  async function HandleShortURL() {
+    if (!shortCode) {
+      toast.error("Please enter a short URL to analyze.");
+      return;
+    }
+    setAnalyticsCode(shortCode);
   }
 
   const HandleCopy = async () => {
@@ -47,7 +63,7 @@ function App() {
   return (
     <main className="page">
       <div className="bg-grid" />
-
+      <Toaster position="top-right" />
       <header className="topbar">
         <p className="brand">SnapLink</p>
       </header>
@@ -94,15 +110,32 @@ function App() {
           )}
         </div>
 
-        <article className="result-card">
-          <p className="result-label">Preview</p>
-          <p className="result-link">https://snplnk.app/summer-sale-2026</p>
-          <div className="result-meta">
-            <span>Status: Ready</span>
-            <span>QR: Enabled</span>
-            <span>Clicks: 0</span>
+        <div className="shortener-panel">
+          <label htmlFor="urlInput">Analyze Your Short URL</label>
+          <div className="input-row">
+            <input
+              id="urlInputshort"
+              type="url"
+              placeholder="http://localhost:5000/sdjlfsdk"
+              onChange={(e) => {
+                const code = e.target.value.replace(
+                  /^https?:\/\/localhost:5000\//,
+                  "",
+                );
+                setShortCode(code);
+                setAnalyticsCode(code);
+              }}
+            />
+            <button type="button" className="analyze" onClick={HandleShortURL}>
+              Analyze
+            </button>
           </div>
-        </article>
+          <div>
+            {analyticsCode && <AnalyticsDashboard shortCode={analyticsCode} />}
+          </div>
+        </div>
+
+       
       </section>
 
       <section className="metrics">
