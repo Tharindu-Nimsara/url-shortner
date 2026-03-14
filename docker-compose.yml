@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      # Pass the Supabase URL from your host machine's .env file
+      - DATABASE_URL=${postgresql://postgres.wztidkofmodxshuliwhz:Tharindu24%2F@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres} 
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./client
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
