@@ -4,13 +4,24 @@ function normalizeBaseUrl(value) {
   }
 
   const trimmedValue = value.trim();
-  const urlMatches = trimmedValue.match(/https?:\/\/[^\s]+/g);
+  const urlMatches = trimmedValue.match(/https?:\/\/.*?(?==https?:\/\/|\s|$)/g);
 
   if (!urlMatches || urlMatches.length === 0) {
     return null;
   }
 
-  const candidate = urlMatches[urlMatches.length - 1].replace(/\/+$/, "");
+  const sanitizedMatches = urlMatches
+    .map((entry) => entry.replace(/[=,;]+$/, "").trim())
+    .filter(Boolean);
+
+  if (sanitizedMatches.length === 0) {
+    return null;
+  }
+
+  const candidate = sanitizedMatches[sanitizedMatches.length - 1].replace(
+    /\/+$/,
+    "",
+  );
 
   try {
     return new URL(candidate).toString().replace(/\/$/, "");
