@@ -12,7 +12,7 @@ services:
       - "5000:5000"
     environment:
       # Pass the Supabase URL from your host machine's .env file
-      - DATABASE_URL=postgresql://postgres.wztidkofmodxshuliwhz:Tharindu24%2F@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres 
+      - DATABASE_URL=${postgresql://postgres.wztidkofmodxshuliwhz:Tharindu24%2F@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres} 
       - REDIS_URL=redis://redis:6379
     depends_on:
       - redis
