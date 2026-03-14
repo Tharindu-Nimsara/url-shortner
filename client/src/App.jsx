@@ -23,7 +23,7 @@ function extractShortCode(value) {
 }
 
 function App() {
-  const [url, setURL] = useState({
+  const [url1, setURL] = useState({
     originalUrl: "",
   });
   const [shortCode, setShortCode] = useState("");
@@ -33,8 +33,8 @@ function App() {
 
   async function HandleURL() {
     try {
-      console.log(url);
-      const shortUrlResponse = await axios.post(API_BASE_URL, url);
+      console.log(url1);
+      const shortUrlResponse = await axios.post(API_BASE_URL, url1);
 
       console.log(shortUrlResponse);
 
@@ -100,7 +100,7 @@ function App() {
             <input
               id="urlInput"
               type="url"
-              value={url.originalUrl}
+              value={url1.originalUrl}
               placeholder="https://example.com/very/long/link/to-share"
               onChange={(e) => {
                 setURL({
