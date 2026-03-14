@@ -45,7 +45,12 @@ function App() {
       }); // clear input URL
       toast.success("successful!");
     } catch (e) {
-      toast.error(e.response.data.message);
+      const errorMessage =
+        e.response?.data?.error ||
+        e.response?.data?.message ||
+        e.message ||
+        "Request failed";
+      toast.error(errorMessage);
     }
   }
 
