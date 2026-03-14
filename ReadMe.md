@@ -69,11 +69,13 @@ Create `server/.env`:
 
 ```env
 DATABASE_URL=postgresql://<username>:<password>@<host>:5432/<database>
+PUBLIC_BASE_URL=https://your-public-backend-host
 ```
 
 Notes:
 
 - `DATABASE_URL` is required.
+- `PUBLIC_BASE_URL` is optional. Set it in production if your app is behind a proxy or load balancer and you want generated short links to use a stable public host.
 - The backend currently creates Redis client with default local settings (`redis://127.0.0.1:6379`).
 
 ### Frontend (`client/.env`)
@@ -81,8 +83,12 @@ Notes:
 Create `client/.env`:
 
 ```env
-VITE_BACKEND_URL=http://localhost:5000
+VITE_API_BASE_URL=http://localhost:5000
 ```
+
+The client also supports `VITE_BACKEND_URL` as a legacy fallback, but `VITE_API_BASE_URL` is the preferred variable.
+
+In production, set `VITE_API_BASE_URL` to your deployed backend URL.
 
 ---
 
@@ -169,7 +175,7 @@ Success response (`201`):
 
 ```json
 {
-  "shortUrl": "http://localhost:5000/AbC1234"
+  "shortUrl": "https://your-public-host/AbC1234"
 }
 ```
 
@@ -263,7 +269,7 @@ Before running, update the short code in `load-test.js` to a valid existing one.
 - **`Invalid URL format` on create**: Verify request body is `{ "originalUrl": "https://..." }`.
 - **DB connection failed**: Confirm `DATABASE_URL` and PostgreSQL accessibility.
 - **Redis connection warning**: App continues without cache, but rate limiting/caching become less effective.
-- **Frontend cannot reach backend**: Check `VITE_BACKEND_URL` and backend port.
+- **Frontend cannot reach backend**: Check `VITE_API_BASE_URL` and backend port.
 - **No analytics shown**: Make sure redirects have occurred for that short code.
 
 ---

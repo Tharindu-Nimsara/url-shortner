@@ -5,6 +5,22 @@ import { Toaster } from "react-hot-toast";
 
 import "./App.css";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
+import { API_BASE_URL } from "./config";
+
+function extractShortCode(value) {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(trimmedValue);
+    return parsedUrl.pathname.replace(/^\//, "");
+  } catch {
+    return trimmedValue.replace(/^\//, "");
+  }
+}
 
 function App() {
   const [url, setURL] = useState({
@@ -18,14 +34,11 @@ function App() {
   async function HandleURL() {
     try {
       console.log(url);
-      const shortUrlResponse = await axios.post(
-        import.meta.env.VITE_BACKEND_URL,
-        url,
-      );
+      const shortUrlResponse = await axios.post(API_BASE_URL, url);
 
       console.log(shortUrlResponse);
 
-      setShortedURL(shortUrlResponse.data.shortUrl); // http://localhost:5000/UmOEtk2
+      setShortedURL(shortUrlResponse.data.shortUrl);
 
       setURL({
         originalUrl: "",
@@ -116,12 +129,9 @@ function App() {
             <input
               id="urlInputshort"
               type="url"
-              placeholder="http://localhost:5000/sdjlfsdk"
+              placeholder={`${API_BASE_URL}/your-short-code`}
               onChange={(e) => {
-                const code = e.target.value.replace(
-                  /^https?:\/\/localhost:5000\//,
-                  "",
-                );
+                const code = extractShortCode(e.target.value);
                 setShortCode(code);
                 setAnalyticsCode(code);
               }}
@@ -134,8 +144,6 @@ function App() {
             {analyticsCode && <AnalyticsDashboard shortCode={analyticsCode} />}
           </div>
         </div>
-
-       
       </section>
 
       <section className="metrics">

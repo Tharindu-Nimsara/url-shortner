@@ -5,6 +5,7 @@ const { nanoid } = require("nanoid");
 const redis = require("redis");
 
 const app = express();
+app.set("trust proxy", true);
 app.use(cors());
 app.use(express.json());
 
@@ -53,6 +54,18 @@ connectRedis();
 // Generates a random 7-character string (e.g., 'V1StGXR')
 const generateShortCode = () => {
   return nanoid(7);
+};
+
+const getPublicBaseUrl = (req) => {
+  if (process.env.PUBLIC_BASE_URL) {
+    return process.env.PUBLIC_BASE_URL.replace(/\/$/, "");
+  }
+
+  const forwardedProto = req.get("x-forwarded-proto");
+  const protocol = forwardedProto ? forwardedProto.split(",")[0] : req.protocol;
+  const host = req.get("x-forwarded-host") || req.get("host");
+
+  return `${protocol}://${host}`.replace(/\/$/, "");
 };
 
 //-----------------------------------------------------------------------
@@ -112,7 +125,9 @@ app.post("/", rateLimiter, async (req, res) => {
     await pool.query(query, values);
 
     // 4. Return success
-    res.status(201).json({ shortUrl: `http://localhost:${port}/${shortCode}` });
+    res.status(201).json({
+      shortUrl: `${getPublicBaseUrl(req)}/${shortCode}`,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Database error" });

@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { API_BASE_URL } from "../config";
 
 export default function AnalyticsDashboard({ shortCode }) {
   const [data, setData] = useState([]);
@@ -14,9 +15,7 @@ export default function AnalyticsDashboard({ shortCode }) {
 
   useEffect(() => {
     // Fetch data from your new Express API
-    fetch(
-      `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")}/analytics/${shortCode}`,
-    )
+    fetch(`${API_BASE_URL}/analytics/${shortCode}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();
