@@ -29,7 +29,9 @@ testDB();
 //-----------------------------------
 // Connect to local Redis instance (default port 6379)
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  url: "redis://redis:6379",
+});
 
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
