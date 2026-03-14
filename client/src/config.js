@@ -1,3 +1,5 @@
+const DEFAULT_API_BASE_URL = "http://140.245.4.22:5000";
+
 function normalizeBaseUrl(value) {
   if (!value || typeof value !== "string") {
     return null;
@@ -38,15 +40,6 @@ function getRuntimeConfigBaseUrl() {
   return normalizeBaseUrl(window.__APP_CONFIG__?.API_BASE_URL);
 }
 
-function getBrowserDefaultBaseUrl() {
-  if (typeof window === "undefined") {
-    return "http://localhost:5000";
-  }
-
-  const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}:5000`;
-}
-
 function isLocalHostname(hostname) {
   return hostname === "localhost" || hostname === "127.0.0.1";
 }
@@ -58,10 +51,10 @@ function resolveApiBaseUrl() {
     normalizeBaseUrl(import.meta.env.VITE_BACKEND_URL);
 
   if (typeof window === "undefined") {
-    return configuredUrl || "http://localhost:5000";
+    return configuredUrl || DEFAULT_API_BASE_URL;
   }
 
-  const browserUrl = new URL(getBrowserDefaultBaseUrl());
+  const browserUrl = new URL(DEFAULT_API_BASE_URL);
 
   if (!configuredUrl) {
     return browserUrl.toString().replace(/\/$/, "");
