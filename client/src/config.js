@@ -19,6 +19,14 @@ function normalizeBaseUrl(value) {
   }
 }
 
+function getRuntimeConfigBaseUrl() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return normalizeBaseUrl(window.__APP_CONFIG__?.API_BASE_URL);
+}
+
 function getBrowserDefaultBaseUrl() {
   if (typeof window === "undefined") {
     return "http://localhost:5000";
@@ -34,6 +42,7 @@ function isLocalHostname(hostname) {
 
 function resolveApiBaseUrl() {
   const configuredUrl =
+    getRuntimeConfigBaseUrl() ||
     normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL) ||
     normalizeBaseUrl(import.meta.env.VITE_BACKEND_URL);
 
