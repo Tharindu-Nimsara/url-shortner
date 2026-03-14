@@ -11,16 +11,16 @@ services:
     ports:
       - "5000:5000"
     environment:
-      # Pass the Supabase URL from your host machine's .env file
-      - DATABASE_URL=${postgresql://postgres.wztidkofmodxshuliwhz:Tharindu24%2F@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:5000}
     depends_on:
       - redis
 
   frontend:
     build: ./client
     environment:
-      - API_BASE_URL=${API_BASE_URL:-}
+      - API_BASE_URL=${API_BASE_URL:-http://localhost:5000}
     ports:
       - "80:80"
     depends_on:
