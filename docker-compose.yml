@@ -19,12 +19,12 @@ services:
       - backend
 
   npm:
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: "jc21/nginx-proxy-manager:latest"
     restart: unless-stopped
     ports:
-      - '80:80'    # Public HTTP
-      - '443:443'  # Public HTTPS
-      - '81:81'    # Admin Web UI
+      - "80:80" # Public HTTP
+      - "443:443" # Public HTTPS
+      - "81:81" # Admin Web UI
     volumes:
       - ./data/npm:/data
       - ./data/letsencrypt:/etc/letsencrypt
