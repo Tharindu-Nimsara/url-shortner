@@ -1,27 +1,30 @@
-version: "3.8"
-
 services:
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
 
   backend:
     build: ./server
-    ports:
-      - "5000:5000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
-      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://snaplink.gleeze.com}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-https://snaplink.gleeze.com}
     depends_on:
       - redis
 
   frontend:
     build: ./client
     environment:
-      - API_BASE_URL=${API_BASE_URL:-http://snaplink.gleeze.com:5000}
-    ports:
-      - "80:80"
+      - API_BASE_URL=${API_BASE_URL:-https://api.snaplink.gleeze.com}
     depends_on:
       - backend
+
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'    # Public HTTP
+      - '443:443'  # Public HTTPS
+      - '81:81'    # Admin Web UI
+    volumes:
+      - ./data/npm:/data
+      - ./data/letsencrypt:/etc/letsencrypt

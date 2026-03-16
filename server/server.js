@@ -13,6 +13,8 @@ app.use(
       "http://140.245.4.22",
       "http://localhost:5173",
       "http://snaplink.gleeze.com",
+      "https://snaplink.gleeze.com",
+      "https://api.snaplink.gleeze.com",
     ],
     credentials: true,
   }),
