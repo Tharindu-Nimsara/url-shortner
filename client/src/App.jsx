@@ -22,6 +22,44 @@ function extractShortCode(value) {
   }
 }
 
+async function copyTextToClipboard(text) {
+  if (
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === "function"
+  ) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const tempTextArea = document.createElement("textarea");
+  tempTextArea.value = text;
+  tempTextArea.setAttribute("readonly", "");
+  tempTextArea.style.position = "absolute";
+  tempTextArea.style.left = "-9999px";
+  document.body.appendChild(tempTextArea);
+  tempTextArea.select();
+
+  const copySucceeded = document.execCommand("copy");
+  document.body.removeChild(tempTextArea);
+
+  if (!copySucceeded) {
+    throw new Error("Clipboard API is unavailable");
+  }
+}
+
+function normalizeReturnedShortUrl(shortUrl) {
+  if (!shortUrl || typeof shortUrl !== "string") {
+    return "";
+  }
+
+  const shortCode = extractShortCode(shortUrl);
+  if (!shortCode) {
+    return shortUrl;
+  }
+
+  return `${API_BASE_URL}/${shortCode}`;
+}
+
 function App() {
   const [url1, setURL] = useState({
     originalUrl: "",
@@ -38,7 +76,7 @@ function App() {
 
       console.log(shortUrlResponse);
 
-      setShortedURL(shortUrlResponse.data.shortUrl);
+      setShortedURL(normalizeReturnedShortUrl(shortUrlResponse.data.shortUrl));
 
       setURL({
         originalUrl: "",
@@ -63,18 +101,22 @@ function App() {
   }
 
   const HandleCopy = async () => {
-    try {
-      // Use the Clipboard API to write the state value to the clipboard
-      await navigator.clipboard.writeText(shortedURL);
+    if (!shortedURL) {
+      toast.error("No short URL to copy.");
+      return;
+    }
 
-      // 3. (Optional) Provide user feedback
+    try {
+      await copyTextToClipboard(shortedURL);
+
       setCopyStatus("Copied!");
       setTimeout(() => {
         setCopyStatus("Copy");
-      }, 1500); // Revert button text after 1.5 seconds
+      }, 1500);
+      toast.success("Copied to clipboard");
     } catch (err) {
       console.error("Failed to copy text: ", err);
-      alert("Failed to copy text.");
+      toast.error("Copy failed. Please copy manually.");
     }
   };
 
