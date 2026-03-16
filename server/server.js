@@ -5,9 +5,14 @@ const { nanoid } = require("nanoid");
 const redis = require("redis");
 
 const app = express();
-app.set("trust proxy", true);
-app.use(cors());
 app.use(express.json());
+app.set("trust proxy", true);
+app.use(
+  cors({
+    origin: ["http://140.245.4.22", "http://localhost:5173"],
+    credentials: true,
+  }),
+);
 
 const port = 5000;
 
