@@ -9,7 +9,11 @@ app.use(express.json());
 app.set("trust proxy", true);
 app.use(
   cors({
-    origin: ["http://140.245.4.22", "http://localhost:5173"],
+    origin: [
+      "http://140.245.4.22",
+      "http://localhost:5173",
+      "http://snaplink.gleeze.com",
+    ],
     credentials: true,
   }),
 );

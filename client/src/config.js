@@ -1,3 +1,3 @@
-const API_BASE_URL = "http://140.245.4.22:5000";
+const API_BASE_URL = "http://snaplink.gleeze.com:5000";
 
 export { API_BASE_URL };

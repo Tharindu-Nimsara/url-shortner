@@ -13,14 +13,14 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
-      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://140.245.4.22}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://snaplink.gleeze.com}
     depends_on:
       - redis
 
   frontend:
     build: ./client
     environment:
-      - API_BASE_URL=${API_BASE_URL:-http://140.245.4.22:5000}
+      - API_BASE_URL=${API_BASE_URL:-http://snaplink.gleeze.com:5000}
     ports:
       - "80:80"
     depends_on:
