@@ -1,5 +1,7 @@
 # SnapLink URL Shortener
 
+Website Link: https://snaplink.gleeze.com/
+
 A full-stack URL shortener with analytics, built with React (Vite) on the frontend and Node.js/Express on the backend.
 
 ## Features
